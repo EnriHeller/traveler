@@ -1,0 +1,71 @@
+.registerBox{
+    margin-top: -12%;
+}
+
+#loginLink1{
+    padding: 8px;
+    border-radius: 30px;
+    text-align: center;
+    color:turquoise;
+    font-size: 15px;
+}
+#loginLink1:hover{
+    color:white;
+    font-weight: bold;
+    background-color:rgb(13, 177, 160) ;
+
+}
+
+.registerForm{
+    margin-top: 15px;
+}
+
+#registerTitle{
+    margin-bottom: 10px;
+}
+
+.buyCard{
+    display: flex;
+    width: 100%;
+    margin: 10px;
+}
+
+.cardImage{
+    width: 720px;
+    height: 100%;
+    margin: 10px;
+    border-radius: 40px;
+}
+
+.cardInfo{
+    width: 60%;
+    margin: 20px;
+    
+}
+.cardTitle{
+    width: 100%;
+}
+.stockWarning{
+    font-size: 15px;
+    color: red;
+}
+.cardPrice{
+    text-align: right;
+    margin: 10px;
+}
+.cardForm{
+    background-color: rgb(46, 46, 46);
+    color: white;
+    padding: 10px;
+    border-radius: 15px;
+    height: 60%;
+}
+
+.cardForm input, .cardForm select, .cardForm button{
+    color: black;
+    margin-bottom: 10px;
+}
+
+.cardForm button{
+    float: right;
+}
