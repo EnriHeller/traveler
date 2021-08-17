@@ -63,7 +63,7 @@ const validarCamposRegistro = (req, res, next) => {
     }
 }
 
-const validarCamposNuevoPaquete = (req, res, next) => {
+const validarCamposPaquete = (req, res, next) => {
     const {
         nombreDestino,
         descripcion,
@@ -152,7 +152,7 @@ server.post("/logIn", async (req, res) =>{
 //ENDPOINTS DE ADMIN
 //CREAR PAQUETE TURÍSTICO
 server.post("/paquetes-turisticos",
-validarCamposNuevoPaquete,
+validarCamposPaquete,
 async (req, res) => {
     try {
         const paquetes = await PaquetesTuristicos.find({});
@@ -199,8 +199,19 @@ async (req, res) => {
     }
 });
 
-//UPDATE PAQUETE TURÍSTICO
+//Conseguir todos los paquetes turísticos en la DB
+server.get("/paquetes-turisticos", async (req, res) => {
+    try {
+        const paquetes = await PaquetesTuristicos.find({});
 
+        res.status(200).json(paquetes);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
+//UPDATE PAQUETE TURÍSTICO
 
 
 server.listen(PORT, () => {
