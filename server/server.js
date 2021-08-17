@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const Usuarios = require("./models/usuarios");
 const PaquetesTuristicos = require("./models/paquetesTuristicos");
+const Compras = require("./models/compras");
 
 //INSTANCIAS
 const server = express();
@@ -132,6 +133,34 @@ const validarAdministrador = async (req, res, next) => {
     }
 }
 
+const validarIdPaquete = async (req, res, next) => {
+    const { idPaquete } = req.body;
+
+    const paqueteElegido = await PaquetesTuristicos.findOne({
+        id: idPaquete
+    });
+
+    if (paqueteElegido == null) {
+        res.status(400).json({error: `Paquete con id ${idPaquete} no existe en la DB.`})
+    } else {
+        next();
+    }
+}
+
+const verificarExistenciaUserId = async (req, res, next) => {
+    const userIdActual = req.params.userId;
+
+    const userEnDb = await Usuarios.findOne({
+        userId: userIdActual
+    });
+
+    if (userEnDb == null) {
+        res.status(400).json({error: `Usuario con id ${userIdActual} no existe en la DB.`});
+    } else {
+        next();
+    }
+}
+
 //ENDPOINTS
 //SignUp - crear un nuevo usuario
 server.post("/signUp",
@@ -248,7 +277,7 @@ server.get("/user-data", async (req, res) => {
     }
 });
 
-//ENDPOINTS DE ADMIN
+
 //CREAR PAQUETE TURÍSTICO
 server.post("/paquetes-turisticos",
 validarAdministrador,
@@ -320,6 +349,76 @@ server.get("/paquetes-turisticos/:id", async (req, res) => {
 
         res.status(200).json(paquete);
         
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
+
+//COMPRAS
+//generar una nueva compra
+server.post("/compras",
+validarIdPaquete,
+async (req, res) => {
+    try {
+        const {
+            idPaquete,
+            fechaInicioElegida,
+        } = req.body;
+    
+        const emailUsuario = req.user.email;
+        const userId = req.user.userId;
+
+        const paqueteElegido = await PaquetesTuristicos.findOne({
+            id: idPaquete
+        });
+
+        const precio = paqueteElegido.precio;
+
+        const compras = await Compras.find({});
+        const numCompras = await Compras.count({});
+        let idNuevaCompra = null;
+
+        if (numCompras === 0) {
+            idNuevaCompra = 1;
+        } else if (numCompras > 0) {
+            const maximumId = Math.max.apply(Math, compras.map(compra => compra.idCompra)) + 1;
+            idNuevaCompra = maximumId;
+        }
+
+        const nuevaCompra = new Compras ({
+            idCompra: idNuevaCompra,
+            userId,
+            userEmail: emailUsuario,
+            idPaquete,
+            fechaInicioElegida,
+            precio,
+            estado: "R"
+        });
+
+        await nuevaCompra.save();
+
+        res.status(201).json(nuevaCompra);
+        
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
+
+//conseguir paquetes vendidos por userid
+server.get("/compras/:userId",
+validarAdministrador,
+verificarExistenciaUserId,
+async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        const paquetesVendidos = await Compras.find({
+            userId
+        });
+
+        res.status(200).json(paquetesVendidos);
     } catch (error) {
         console.error(error.message);
         res.status(400).json(error.message);
