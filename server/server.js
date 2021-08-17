@@ -67,8 +67,6 @@ const validarCamposPaquete = (req, res, next) => {
     const {
         nombreDestino,
         descripcion,
-        fechaInicioPeriodo,
-        fechaFinPeriodo,
         duracionDiasPaquete,
         precio,
         url,
@@ -78,14 +76,42 @@ const validarCamposPaquete = (req, res, next) => {
     if (
         nombreDestino == null || nombreDestino == "" ||
         descripcion == null || descripcion == "" ||
-        fechaInicioPeriodo == null || fechaInicioPeriodo == "" ||
-        fechaFinPeriodo == null || fechaFinPeriodo == "" ||
         duracionDiasPaquete == null || duracionDiasPaquete == "" ||
         precio == null || precio == "" ||
         url == null || url == "" ||
         stock == null || stock == ""
     ) {
         res.status(400).json({error: `Debe ingresar todos los campos.`})
+    } else {
+        next();
+    }
+}
+
+const validarUserIdUnico = async (req, res, next) => {
+    const posibleUserId = req.body.userId;
+
+    const userEnDb = await Usuarios.findOne({
+        userId: posibleUserId
+    });
+
+    console.log(userEnDb);
+
+    if (userEnDb != null) {
+        res.status(400).json({error: `Nombre de usuario ${posibleUserId} ya está en uso.`});
+    } else {
+        next();
+    }
+}
+
+const validarEmailUnico = async (req, res, next) => {
+    const posibleEmail = req.body.email;
+
+    const userEnDb = await Usuarios.findOne({
+        email: posibleEmail
+    });
+
+    if (userEnDb != null) {
+        res.status(400).json({error: `Email ${posibleEmail} ya está en uso.`});
     } else {
         next();
     }
@@ -110,6 +136,8 @@ const validarAdministrador = async (req, res, next) => {
 //SignUp - crear un nuevo usuario
 server.post("/signUp",
 validarCamposRegistro,
+validarUserIdUnico,
+validarEmailUnico,
 async (req,res)=>{
     try {
         const newUser = new Usuarios({
@@ -147,6 +175,7 @@ server.post("/logIn", async (req, res) =>{
         } else {
             const token = jwt.sign(
                 {
+                    userId: posibleUsuario.userId,
                     email: posibleUsuario.email,
                     nombre: posibleUsuario.nombre,
                     apellido: posibleUsuario.apellido
@@ -164,9 +193,47 @@ server.post("/logIn", async (req, res) =>{
     }
 });
 
+//actualizar datos de usuario
+server.put("/user-data",
+async (req, res) => {
+    try {
+        const usuarioActual = req.user;
+
+        const {
+            clave,
+            nombre,
+            apellido,
+            fechaNac,
+            paisResidencia
+        } = req.body;
+
+        const userIdUpdate = usuarioActual.userId;
+        const filter = { userId: userIdUpdate };
+        const update = {
+            clave,
+            nombre,
+            apellido,
+            fechaNac,
+            paisResidencia
+        }
+        
+
+        const userInDb = await Usuarios.findOneAndUpdate( filter, update, {
+            new: true
+        });
+
+        res.status(200).json(userInDb);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
+
 //ENDPOINTS DE ADMIN
 //CREAR PAQUETE TURÍSTICO
 server.post("/paquetes-turisticos",
+validarAdministrador,
 validarCamposPaquete,
 async (req, res) => {
     try {
@@ -184,8 +251,6 @@ async (req, res) => {
         const {
             nombreDestino,
             descripcion,
-            fechaInicioPeriodo,
-            fechaFinPeriodo,
             duracionDiasPaquete,
             precio,
             url,
@@ -196,12 +261,11 @@ async (req, res) => {
             id: idNuevoPaquete,
             nombreDestino,
             descripcion,
-            fechaInicioPeriodo,
-            fechaFinPeriodo,
             duracionDiasPaquete,
             precio,
             url,
             stock,
+            activo: true,
         });
 
         await nuevoPaquete.save();
