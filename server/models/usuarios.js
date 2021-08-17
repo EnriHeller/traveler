@@ -10,13 +10,14 @@
 const mongoose = require("../conexion");
 
 const Usuarios = mongoose.model('usuarios', {
+    userId: String,
+    clave: String,
+    email: String,
     nombre: String,
     apellido: String,
-    nacimiento: String,
-    email: String,
-    nombreUsuario: String,
-    contrasena: String,
-    isAdmin: Boolean,
+    fechaNac: String,
+    paisResidencia: String,
+    administrador: Boolean
 });
 
 module.exports = Usuarios;
