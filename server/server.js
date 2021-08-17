@@ -91,6 +91,21 @@ const validarCamposPaquete = (req, res, next) => {
     }
 }
 
+const validarAdministrador = async (req, res, next) => {
+    const usuarioActual = req.user;
+    const emailActual = usuarioActual.email;
+
+    const userInDb = await Usuarios.findOne({
+        email: emailActual
+    });
+
+    if (!userInDb.administrador) {
+        res.status(400).json({error: `usuario con email: ${emailActual} no es administrador.`})
+    } else {
+        next();
+    }
+}
+
 //ENDPOINTS
 //SignUp - crear un nuevo usuario
 server.post("/signUp",
@@ -211,8 +226,23 @@ server.get("/paquetes-turisticos", async (req, res) => {
         res.status(400).json(error.message);
     }
 });
-//UPDATE PAQUETE TURÍSTICO
 
+//Conseguir paquete turístico por id
+server.get("/paquetes-turisticos/:id", async (req, res) => {
+    try {
+        const idPaquete = req.params.id;
+
+        const paquete = await PaquetesTuristicos.findOne({
+            id: idPaquete
+        });
+
+        res.status(200).json(paquete);
+        
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
 
 server.listen(PORT, () => {
     console.log(`Servidor iniciado correctamente en puerto ${PORT}`)
