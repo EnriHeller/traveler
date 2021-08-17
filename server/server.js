@@ -230,6 +230,24 @@ async (req, res) => {
     }
 });
 
+//conseguir datos de usuario
+server.get("/user-data", async (req, res) => {
+    try {
+        const usuarioActual = req.user;
+        const userIdActual = usuarioActual.userId;
+    
+        const userInDb = await Usuarios.findOne({
+            userId: userIdActual
+        });
+
+        res.status(200).json(userInDb);
+        
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
+
 //ENDPOINTS DE ADMIN
 //CREAR PAQUETE TURÍSTICO
 server.post("/paquetes-turisticos",
