@@ -70,7 +70,7 @@ const validarCamposPaquete = (req, res, next) => {
         descripcion,
         duracionDiasPaquete,
         precio,
-        url,
+        imgUrl,
         stock,
     } = req.body;
 
@@ -79,7 +79,7 @@ const validarCamposPaquete = (req, res, next) => {
         descripcion == null || descripcion == "" ||
         duracionDiasPaquete == null || duracionDiasPaquete == "" ||
         precio == null || precio == "" ||
-        url == null || url == "" ||
+        imgUrl == null || imgUrl == "" ||
         stock == null || stock == ""
     ) {
         res.status(400).json({error: `Debe ingresar todos los campos.`})
@@ -300,7 +300,7 @@ async (req, res) => {
             descripcion,
             duracionDiasPaquete,
             precio,
-            url,
+            imgUrl,
             stock,
         } = req.body;
 
@@ -310,7 +310,7 @@ async (req, res) => {
             descripcion,
             duracionDiasPaquete,
             precio,
-            url,
+            imgUrl,
             stock,
             activo: true,
         });
@@ -322,6 +322,44 @@ async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(400).json(error);
+    }
+});
+
+//actualizar paquete turistico por id
+server.put("/paquetes-turisticos/:idPaquete",
+validarAdministrador,
+validarCamposPaquete,
+async (req, res) => {
+    try {
+        const filter = req.params.idPaquete;
+        
+        const {
+            nombreDestino,
+            descripcion,
+            duracionDiasPaquete,
+            precio,
+            imgUrl,
+            stock,
+        } = req.body;
+    
+        const update = {
+            nombreDestino,
+            descripcion,
+            duracionDiasPaquete,
+            precio,
+            imgUrl,
+            stock,
+        }
+    
+    
+        const paqueteDB = await PaquetesTuristicos.findOneAndUpdate(filter, update, {
+            new: true
+        });
+    
+        res.status(200).json(paqueteDB);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({error: `Ha ocurrido un problema con el servidor. Inténtelo nuevamente.`});
     }
 });
 
