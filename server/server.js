@@ -330,32 +330,37 @@ server.put("/paquetes-turisticos/:idPaquete",
 validarAdministrador,
 validarCamposPaquete,
 async (req, res) => {
-    const filter = req.params.idPaquete;
+    try {
+        const filter = req.params.idPaquete;
+        
+        const {
+            nombreDestino,
+            descripcion,
+            duracionDiasPaquete,
+            precio,
+            imgUrl,
+            stock,
+        } = req.body;
     
-    const {
-        nombreDestino,
-        descripcion,
-        duracionDiasPaquete,
-        precio,
-        imgUrl,
-        stock,
-    } = req.body;
-
-    const update = {
-        nombreDestino,
-        descripcion,
-        duracionDiasPaquete,
-        precio,
-        imgUrl,
-        stock,
+        const update = {
+            nombreDestino,
+            descripcion,
+            duracionDiasPaquete,
+            precio,
+            imgUrl,
+            stock,
+        }
+    
+    
+        const paqueteDB = await PaquetesTuristicos.findOneAndUpdate(filter, update, {
+            new: true
+        });
+    
+        res.status(200).json(paqueteDB);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({error: `Ha ocurrido un problema con el servidor. Inténtelo nuevamente.`});
     }
-
-
-    const paqueteDB = await PaquetesTuristicos.findOneAndUpdate(filter, update, {
-        new: true
-    });
-
-    res.status(200).json(paqueteDB);
 });
 
 //Conseguir todos los paquetes turísticos en la DB
