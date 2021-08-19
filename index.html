@@ -112,11 +112,18 @@
 														<label for="firstname">Nombre</label>
 														<input type="text" id="firstname" class="form-control">
 														<label for="lastname">Apellido</label>
-														<input type="email" id="firstname" class="form-control">
-														<label for="date-start">Fecha de nacimiento</label>
-														<input type="text" id="date-start" class="form-control">
-														<label for="lastname">Email</label>
 														<input type="text" id="lastname" class="form-control">
+														<label for="pais" >Pais:</label>
+														<select name="pais" id="pais" class="form-control">
+															<option value="Argentina">Argentina</option>
+															<option value="Colombia">Colombia</option>
+															<option value="Perú">Perú</option>
+															<option value="Venezuela">Venezuela</option>
+														</select>
+														<label for="nacimiento">Fecha de nacimiento</label>
+														<input type="date" id="nacimiento" class="form-control">
+														<label for="email">Email</label>
+														<input type="email" id="email" class="form-control">
 														<label for="user">Nombre de usuario</label>
 														<input type="text" id="user" class="form-control">
 														<label for="pass">Contraseña</label>
@@ -124,8 +131,8 @@
 													</div>
 												</div>
 												<div class="row form-group">
-													<div class="col-md-12">
-														<input type="submit" class="btn btn-primary btn-block" value="Que comience el viaje">
+													<div class="col-md-12" >
+														<input type="button" class="btn btn-primary btn-block" value="Que comience el viaje" id="signButton">
 													</div>
 												</div>
 											</form>	
@@ -352,7 +359,7 @@
 						<div class="col-md-6 col-sm-6">
 							<div class="form-group">
 								<label for="email" class="sr-only">Email</label>
-								<input type="email" class="form-control" id="email" placeholder="Email">
+								<input type="email" class="form-control" id="email2" placeholder="Email">
 							</div>
 						</div>
 						<div class="col-md-6 col-sm-6">
