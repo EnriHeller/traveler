@@ -6,6 +6,7 @@ const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
+const bcrypt = require("bcrypt");
 const Usuarios = require("./models/usuarios");
 const PaquetesTuristicos = require("./models/paquetesTuristicos");
 const Compras = require("./models/compras");
@@ -180,6 +181,10 @@ async (req,res)=>{
             administrador: false
         });
 
+        const salt = await bcrypt.genSalt(10);
+
+        newUser.clave = await bcrypt.hash(newUser.clave, salt);
+
         await newUser.save();
 
         res.status(201).json(newUser);      
@@ -195,30 +200,36 @@ server.post("/logIn", async (req, res) =>{
         const {email, clave} = req.body;
     
         const posibleUsuario = await Usuarios.findOne({
-            email,
-            clave,
+            email
         });
     
         if(!posibleUsuario) {
             res.status(401).json({error: "Email o clave incorrectos"});
         } else {
-            const token = jwt.sign(
-                {
-                    userId: posibleUsuario.userId,
-                    email: posibleUsuario.email,
-                    nombre: posibleUsuario.nombre,
-                    apellido: posibleUsuario.apellido
-                },
-                JWT_SECRET,
-                { expiresIn: "60m"}
-            );
-    
-            res.status(200);
-            res.json({token});
+
+            const validPassword = await bcrypt.compare(clave, posibleUsuario.clave);
+
+            if (validPassword) {
+                const token = jwt.sign(
+                    {
+                        userId: posibleUsuario.userId,
+                        email: posibleUsuario.email,
+                        nombre: posibleUsuario.nombre,
+                        apellido: posibleUsuario.apellido
+                    },
+                    JWT_SECRET,
+                    { expiresIn: "60m"}
+                );
+        
+                res.status(200);
+                res.json({token});
+            } else {
+                throw new Error(`Email o clave incorrecta.`)
+            }
         }
     } catch (error) {
         console.error(error.message);
-        res.status(400).json(error.message);
+        res.status(400).json({error: error.message});
     }
 });
 
