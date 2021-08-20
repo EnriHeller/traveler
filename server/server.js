@@ -33,7 +33,7 @@ server.use(
         secret: JWT_SECRET,
         algorithms: ["HS256"],
     }).unless({
-        path: ["/logIn", "/signUp"],
+        path: ["/logIn", "/signUp", "/paquetes-turisticos-index"],
     })
 );
 
@@ -375,6 +375,20 @@ server.get("/paquetes-turisticos", async (req, res) => {
         res.status(400).json(error.message);
     }
 });
+
+//Conseguir todos los paquetes turísticos en la DB
+server.get("/paquetes-turisticos-index", async (req, res) => {
+    try {
+        const paquetes = await PaquetesTuristicos.find({});
+
+        res.status(200).json(paquetes);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json(error.message);
+    }
+});
+
 
 //Conseguir paquete turístico por id
 server.get("/paquetes-turisticos/:id", async (req, res) => {
