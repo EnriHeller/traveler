@@ -338,7 +338,7 @@ var requestOptions = {
 
 fetch("http://localhost:3000/signUp", requestOptions)
   .then(response => response.json())
-  .then(result => window.location.replace("/login.html"))
+  .then(result => window.location.replace("./login.html"))
   .catch(error => console.log('error', error));
 })
 
