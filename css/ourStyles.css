@@ -62,10 +62,38 @@
 }
 
 .cardForm input, .cardForm select, .cardForm button{
-    color: black;
+    color: white;
+    background-color: rgba(65, 65, 65, 0.651);
+
     margin-bottom: 10px;
 }
 
 .cardForm button{
     float: right;
+}
+
+.adminPageCard{
+    padding: 16px;
+}
+.cancelButton{
+    justify-self: center;
+}
+
+.crearPaqueteContainer{
+    display: flex;
+    justify-content: center;
+}
+.adminForm{
+    padding: 16px;
+    height: auto;
+}
+.adminInput{
+    width: 100%;
+    resize: none;
+}
+
+
+.crearButton{
+    width: 100%;
+    margin-top: 40px;
 }
