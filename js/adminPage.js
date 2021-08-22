@@ -19,7 +19,7 @@ const checkAdmin = async () => {
     const result = await response.json();
     if (result.error || !result.welcome) {
         alert(result.error);
-        window.location.replace("./login.html")
+        window.location.replace("./index.html")
     } else if (result.welcome) {
         const welcomeText = document.querySelector(".welcome");
         welcomeText.textContent = result.welcome;
