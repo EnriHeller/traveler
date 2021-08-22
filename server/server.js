@@ -488,6 +488,13 @@ async (req, res) => {
     }
 });
 
+//endpoint checkadmin
+server.get("/checkAdmin",
+validarAdministrador,
+(req, res) => {
+    res.status(200).json({welcome: `Bienvenido ${req.user.nombre} ${req.user.apellido}`});
+});
+
 server.listen(PORT, () => {
     console.log(`Servidor iniciado correctamente en puerto ${PORT}`)
 });
